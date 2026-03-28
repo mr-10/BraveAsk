@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_main">
+
+    <!-- WebView -->
+    <WebView
+        android:id="@+id/webView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
+    <!-- Loading Screen -->
+    <LinearLayout
+        android:id="@+id/loadingLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:background="@color/bg_main"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ask"
+            android:textSize="42sp"
+            android:textColor="@color/text_primary"
+            android:fontFamily="serif"
+            android:letterSpacing="0.08"
+            android:layout_marginBottom="16dp" />
+
+        <View
+            android:id="@+id/loadingDot"
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:background="@drawable/dot_loading"
+            android:alpha="0.5" />
+
+    </LinearLayout>
+
+    <!-- Offline Screen -->
+    <LinearLayout
+        android:id="@+id/offlineLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="32dp"
+        android:background="@color/bg_main"
+        android:visibility="gone">
+
+        <!-- Error Card -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:background="@drawable/offline_card_bg"
+            android:padding="28dp"
+            android:layout_marginHorizontal="8dp">
+
+            <!-- Icon -->
+            <TextView
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:text="✦"
+                android:textSize="28sp"
+                android:textColor="@color/accent_muted"
+                android:gravity="center"
+                android:layout_marginBottom="20dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Something went wrong."
+                android:textSize="16sp"
+                android:textColor="@color/text_primary"
+                android:fontFamily="serif"
+                android:gravity="center"
+                android:layout_marginBottom="4dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Please try again."
+                android:textSize="16sp"
+                android:textColor="@color/text_primary"
+                android:fontFamily="serif"
+                android:gravity="center"
+                android:layout_marginBottom="24dp" />
+
+            <Button
+                android:id="@+id/retryButton"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:text="Retry"
+                android:textSize="15sp"
+                android:textColor="@color/white"
+                android:background="@drawable/retry_button_bg"
+                android:paddingHorizontal="40dp"
+                android:elevation="0dp"
+                android:stateListAnimator="@null" />
+
+        </LinearLayout>
+
+        <!-- Re-login link -->
+        <TextView
+            android:id="@+id/retryLoginText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Or, try logging in again."
+            android:textSize="14sp"
+            android:textColor="@color/link_color"
+            android:layout_marginTop="20dp"
+            android:clickable="true"
+            android:focusable="true" />
+
+    </LinearLayout>
+
+</FrameLayout>

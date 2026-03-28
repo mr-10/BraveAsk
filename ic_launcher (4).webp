@@ -1,0 +1,180 @@
+package com.braveask.app;
+
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
+import android.net.NetworkRequest;
+import android.os.Bundle;
+import android.view.View;
+import android.webkit.WebChromeClient;
+import android.webkit.WebResourceError;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    private WebView webView;
+    private LinearLayout offlineLayout;
+    private LinearLayout loadingLayout;
+    private Button retryButton;
+    private TextView retryLoginText;
+    private ConnectivityManager connectivityManager;
+    private ConnectivityManager.NetworkCallback networkCallback;
+
+    private static final String TARGET_URL = "https://search.brave.com/ask";
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        webView = findViewById(R.id.webView);
+        offlineLayout = findViewById(R.id.offlineLayout);
+        loadingLayout = findViewById(R.id.loadingLayout);
+        retryButton = findViewById(R.id.retryButton);
+        retryLoginText = findViewById(R.id.retryLoginText);
+
+        connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        setupWebView();
+        setupNetworkCallback();
+        setupOfflineButtons();
+
+        if (isOnline()) {
+            loadWebView();
+        } else {
+            showOfflineScreen();
+        }
+    }
+
+    private void setupWebView() {
+        WebSettings settings = webView.getSettings();
+        settings.setJavaScriptEnabled(true);
+        settings.setDomStorageEnabled(true);
+        settings.setLoadWithOverviewMode(true);
+        settings.setUseWideViewPort(true);
+        settings.setCacheMode(WebSettings.LOAD_DEFAULT);
+        settings.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW);
+        settings.setUserAgentString(
+            "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 " +
+            "(KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36"
+        );
+
+        webView.setWebViewClient(new WebViewClient() {
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                loadingLayout.setVisibility(View.GONE);
+                webView.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onReceivedError(WebView view, WebResourceRequest request,
+                                        WebResourceError error) {
+                super.onReceivedError(view, request, error);
+                if (request.isForMainFrame()) {
+                    showOfflineScreen();
+                }
+            }
+        });
+
+        webView.setWebChromeClient(new WebChromeClient());
+    }
+
+    private void setupNetworkCallback() {
+        networkCallback = new ConnectivityManager.NetworkCallback() {
+            @Override
+            public void onAvailable(@NonNull Network network) {
+                runOnUiThread(() -> {
+                    if (offlineLayout.getVisibility() == View.VISIBLE) {
+                        loadWebView();
+                    }
+                });
+            }
+
+            @Override
+            public void onLost(@NonNull Network network) {
+                runOnUiThread(() -> {
+                    if (!isOnline()) {
+                        showOfflineScreen();
+                    }
+                });
+            }
+        };
+
+        NetworkRequest request = new NetworkRequest.Builder()
+                .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                .build();
+        connectivityManager.registerNetworkCallback(request, networkCallback);
+    }
+
+    private void setupOfflineButtons() {
+        retryButton.setOnClickListener(v -> {
+            if (isOnline()) {
+                loadWebView();
+            } else {
+                // Shake animation to indicate still offline
+                retryButton.animate()
+                    .translationX(-10f).setDuration(50)
+                    .withEndAction(() -> retryButton.animate()
+                        .translationX(10f).setDuration(50)
+                        .withEndAction(() -> retryButton.animate()
+                            .translationX(0f).setDuration(50).start())
+                        .start())
+                    .start();
+            }
+        });
+
+        retryLoginText.setOnClickListener(v -> {
+            if (isOnline()) {
+                loadWebView();
+            }
+        });
+    }
+
+    private void loadWebView() {
+        offlineLayout.setVisibility(View.GONE);
+        loadingLayout.setVisibility(View.VISIBLE);
+        webView.setVisibility(View.GONE);
+        webView.loadUrl(TARGET_URL);
+    }
+
+    private void showOfflineScreen() {
+        webView.setVisibility(View.GONE);
+        loadingLayout.setVisibility(View.GONE);
+        offlineLayout.setVisibility(View.VISIBLE);
+    }
+
+    private boolean isOnline() {
+        if (connectivityManager == null) return false;
+        Network network = connectivityManager.getActiveNetwork();
+        if (network == null) return false;
+        NetworkCapabilities caps = connectivityManager.getNetworkCapabilities(network);
+        return caps != null && caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (webView.canGoBack()) {
+            webView.goBack();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (connectivityManager != null && networkCallback != null) {
+            connectivityManager.unregisterNetworkCallback(networkCallback);
+        }
+    }
+}

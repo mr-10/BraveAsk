@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Outer Decorative Ring -->
+    <path
+        android:fillAlpha="0.15"
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,18c19.9,0 36,16.1 36,36s-16.1,36 -36,36s-36,-16.1 -36,-36s16.1,-36 36,-36M54,14c-22.1,0 -40,17.9 -40,40s17.9,40 40,40s40,-17.9 40,-40s-17.9,-40 -40,-40z" />
+
+    <!-- Main Core Sparkle -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,26 L59,49 L82,54 L59,59 L54,82 L49,59 L26,54 L49,49 Z" />
+
+    <!-- Accent Sparkle Top Right -->
+    <path
+        android:fillAlpha="0.7"
+        android:fillColor="#FFFFFF"
+        android:pathData="M78,24 L80,31 L87,33 L80,35 L78,42 L76,35 L69,33 L76,31 Z" />
+
+    <!-- Tiny Sparkle Bottom Left -->
+    <path
+        android:fillAlpha="0.5"
+        android:fillColor="#FFFFFF"
+        android:pathData="M32,70 L33,74 L37,75 L33,76 L32,80 L31,76 L27,75 L31,74 Z" />
+
+</vector>
